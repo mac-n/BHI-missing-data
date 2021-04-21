@@ -1,5 +1,7 @@
 require(boot)
+require(pROC)
 #fc is the function we are bootstrapping - in this case it returns the multiclass AUC
+#confidence intervals shown on Figure 5 of the paper. 
 i=1:nrow(thedata)
 fc <- function( multidata, i){
   d2 <- multidata[i,1:2]
