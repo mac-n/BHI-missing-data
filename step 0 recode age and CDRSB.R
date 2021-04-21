@@ -30,7 +30,7 @@ rnum <- nrow(bl_adni)
    end 
  }
 
-
+#recode CDR-SB into 3 classes
 df<-bl_adni
 df$CDRSB1[df$CDRSB==0] <- 0
 df$CDRSB1[(df$CDRSB>=0.5 & df$CDRSB<=4.0)]<- 1

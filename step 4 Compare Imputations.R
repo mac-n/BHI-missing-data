@@ -1,40 +1,76 @@
-output<-matrix(nrow=10,ncol=15)
-for (i in 1:10){
-  output[i,1:3]<-comparereg(meanimputed[[i]],basedataset)
-  output[i,4:6]<-comparereg(medianimputed[[i]],basedataset)
-  output[i,7:9]<-comparereg(imputedmice[[i]],basedataset)
-  output[i,10:12]<-comparereg(imputedmice1[[i]],basedataset)  
-  output[i,13:15]<-comparereg(RFimputed[[i]],basedataset)
-}
-### this will be a way to tell if the tests are statistically significant. 
+#this code runs the comparereg function on each imputed dataset
 
-output2=(nrow=10,ncol=40)
-for (i in 1:10){
-  for(j in 1:10{
-  output[i,i*j]<-comparereg(meanimputed[[i]][folds[[i]][[j]],],basedataset[folds[[i]][[j]],])[1])
-  output[i,i*j+1]<-comparereg(medianimputed[[i]][folds[[i]][[j]],],basedataset[folds[[i]][[j]],])[1])
-  output[i,i*j+2]<-comparereg(medianimputed[[i]][folds[[i]][[j]],],basedataset[folds[[i]][[j]],])[1])
-  output[i,i*j+3]<-comparereg(imputedmice1[i]][folds[[i]][[j]],],basedataset[folds[[i]][[j]],])[1])
-  output[i,i*j+4]<-comparereg(RFimputed[i]][folds[[i]][[j]],],basedataset[folds[[i]][[j]],])[1])
+#the comparereg function regresses the values of the imputed columns
+#on the values of the same columns in the base dataset
+# and returns a vector with mean rsquared value for all the columns, plus the rsquared value for each column
+
+comparereg<-function(temp){
+  temp1<-basedataset
+  tempvec<-vector(length=8)
+  for(i in 4:ncol(temp)){
+    (templm<-lm(temp[,i]~basedataset[,i]))
+    summary(templm)
+    tempvec[i-2]<-summary(templm)$r.squared
   }
+  tempvec[1]<-mean(tempvec[2:8])
+  return(tempvec)
 }
 
-output<-rbind(output,colMeans(output))
+#the rest of the code loops through all the lists of imputed datasets
+#and applies comparereg to each in turn.
 
-for (i in c(2,5,8,11,14)){
-  output[11,i]<-min(output[,i])
+#the output matrices have individual column rsquared values and the mean of all column rsquared values
+#the mean of the means was used in Figure 4 along with imputation times recorded in Step 3. 
+
+meanmatrix<-matrix(nrow=10,ncol=9)
+colnames(meanmatrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  meanmatrix[i,]<-comparereg(meanimputed[[i]])
 }
 
-for (i in c(3,6,9,12,15)){
-  output[11,i]<-max(output[,i])
+medianmatrix<-matrix(nrow=10,ncol=9)
+colnames(medianmatrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  medianmatrix[i,]<-comparereg(medianimputed[[i]])
+}
+RFmatrix<-matrix(nrow=10,ncol=9)
+colnames(RFmatrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  RFmatrix[i,]<-comparereg(RFimputed[[i]])
+}
+byclassmeanmatrix<-matrix(nrow=10,ncol=9)
+colnames(byclassmeanmatrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  byclassmeanmatrix[i,]<-comparereg(byclassmeanimputed[[i]])
+}
+mice1matrix<-matrix(nrow=10,ncol=9)
+colnames(mice1matrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  mice1matrix[i,]<-comparereg(completedmice1[[i]])
+}
+mice5matrix<-matrix(nrow=10,ncol=9)
+colnames(mice5matrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  mice5matrix[i,]<-comparereg(completedmice5[[i]])
+}
+mice10matrix<-matrix(nrow=10,ncol=9)
+colnames(mice10matrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  mice10matrix[i,]<-comparereg(completedmice10[[i]])
+}
+mice15matrix<-matrix(nrow=10,ncol=9)
+colnames(mice15matrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  mice15matrix[i,]<-comparereg(completedmice15[[i]])
+}
+mice50matrix<-matrix(nrow=10,ncol=9)
+colnames(mice50matrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  mice50matrix[i,]<-comparereg(completedmice50[[i]])
 }
 
-forexcel<-matrix(nrow=5,ncol=3)
-for (i in 0:4){
-  y=i*3+1
-  forexcel[i+1,1]<-output[11,y]
-  forexcel[i+1,2]<-output[11,y]-output[11,y+1]
-  forexcel[i+1,3]<-output[11,y+2]-output[11,y]
+bpcamatrix<-matrix(nrow=10,ncol=9)
+colnames(bpcamatrix)<-c("mean",colnames(basedataset)[4:11])
+for (i in 1:10){
+  bpcamatrix[i,]<-comparereg(pcimputed[[i]])
 }
-
-rownames(forexcel)<-c("mean","median","PMM1","PMM5","RF")
