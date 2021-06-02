@@ -14,6 +14,8 @@ Download and Run. Requires the ADNIMERGE package  (adni.loni.usc.edu) to be inst
 
 #Step 5 onwards is for the imputation + classification LOOCV accuracy and time testing (results shown in Fig. 5 in paper)
 
-#MATLAB code for Figure 4 and 5 is also included.
+#MATLAB code for Figure 3 and 4 is  included.
+
+#an slight modification of the missForest method in R which allows for the specification of a test set to be imputed separately from the training set is also included
 
 ```

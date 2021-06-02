@@ -11,13 +11,12 @@ ptm<-proc.time()
 for (i in 1:N){
   print(i)
   temp<-thedata
-  #avoid double dipping when it comes to classification
-  #by deleting the outcome variable for the test row
-  #not the whole row, so that missing values in the test row are still imputed
+ #avoid double dipping when it comes to classification
+  #by imputing training and test set separately with missForestnew
   temp[i,1]<-NA
-  #that's why we have to do this N times
+  #get rid of class variable in test row just to make extra sure about the double dipping!
   set.seed(100)
-  forestlist1[[i]]<-missForest(data.matrix(temp))
+  forestlist1[[i]]<-missForestnew(temp,testvec=c(i))
   
 }
 forestimputationtime<-proc.time()-ptm

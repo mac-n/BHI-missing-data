@@ -77,8 +77,8 @@ models[[3]]=list()
 for (i in 1:N){
   print (c("C",i))
   
-  model1<-train(CDRSB ~.,forestlist1[[i]]$ximp[-i,],method="rf",trControl=fitControl)
-  model1predict<-predict(model1,forestlist1[[i]]$ximp[i,])
+  model1<-train(CDRSB ~.,forestlist1[[i]]$ximp,method="rf",trControl=fitControl)
+  model1predict<-predict(model1,forestlist1[[i]]$ximptest)
   models[[3]][[i]]=model1
   resultsmatrix[i,3]<-model1predict
 }
@@ -117,8 +117,8 @@ for (i in 1:N){
   print (c("E",i))
   temptest<-thedata[i,]
   reducedtest<-temptest[,colnames(temptest)[!is.na(temptest)]]
-  ximptest<-forestlist1[[i]]$ximp[-i,]
-  reducedtrain<-ximptest[,names(reducedtest)]
+  #ximptest<-forestlist1[[i]]$ximptest
+  reducedtrain<-forestlist1[[i]]$ximp[,names(reducedtest)]
   #model1<-randomForest(CDRSB ~.,reducedtrain)
   model1<-train(CDRSB ~.,reducedtrain,method="rf",trControl=fitControl)
   model1predict<-predict(model1,reducedtest)
@@ -128,7 +128,9 @@ for (i in 1:N){
 ptm <- proc.time()-ptm
 times[[5]]<-ptm
 
-#F mice5, mice5, modal imputation
+
+
+b#F mice5, mice5, modal imputation
 models[[6]]=list()
 for(i in 1:N) {
   print (c("F",i))
@@ -253,8 +255,8 @@ ptm <- proc.time()
 for (i in 1:N){
   print (c("K",i))
   
-  model1<-train(CDRSB ~.,forestlist1[[i]]$ximp[-i,],method="rf",trControl=fitControl)
-  model1predict<-predict(model1,forestlist1[[i]]$ximp[i,])
+  model1<-train(CDRSB ~.,forestlist1[[i]]$ximp,method="svmLinear",trControl=fitControl)
+  model1predict<-predict(model1,forestlist1[[i]]$ximptest)
   models[[11]][[i]]=model1
   resultsmatrix[i,11]<-model1predict
 }
@@ -268,7 +270,7 @@ for (i in 1:N){
   print (c("L",i))
   temptest<-thedata[i,]
   reducedtest<-temptest[,colnames(temptest)[!is.na(temptest)]]
-  ximp<-forestlist1[[i]]$ximp[-i,]
+  ximp<-forestlist1[[i]]$ximp
   reducedtrain<-ximp[,names(reducedtest)]
   #model1<-svm(CDRSB ~.,reducedtrain)
   model1<-train(CDRSB ~.,reducedtrain,method="svmLinear",trControl=fitControl)
@@ -314,7 +316,7 @@ for (i in 1:N){
 
 ptm <- proc.time()-ptm
 times[[14]]<-ptm
-save.image()
+#save.image()
 #0 averaged over mice15 imputations for training set, and test set,  SVM classifier
 
 models[[15]]=list()
@@ -335,7 +337,7 @@ times[[15]]<-ptm
 #P averaged over mice15 imputations for training set, reduced feature, SVM classifier
 models[[16]]=list()
 ptm <- proc.time()
-for (i in 1073:N){
+for (i in 1:N){
   print (c("P",i))
   temptest<-thedata[i,]
   reducedtest<-temptest[,colnames(temptest)[!is.na(temptest)]]
@@ -345,7 +347,8 @@ for (i in 1073:N){
   #model1<-randomForest(CDRSB ~.,temptrain)
   model1<-train(CDRSB ~.,temptrain,method="svmLinear",trControl=fitControl)
   
-  model1predict<-predict(model1,reducedtest)
+  model1predict<-predict(model1,mice15toclassify[[i]][i,])
+ 
   models[[16]][[i]]=model1
   resultsmatrix[i,16]<-model1predict
 }
@@ -353,3 +356,4 @@ for (i in 1073:N){
 ptm <- proc.time()-ptm3
 times[[16]]<-ptm3
 
+beepr::beep(3)
